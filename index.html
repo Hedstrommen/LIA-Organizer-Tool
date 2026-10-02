@@ -81,7 +81,12 @@ textarea { resize:vertical; min-height:70px; }
       <h1>📋 LIA Organizer</h1>
       <div class="subtitle">Håll koll på dina LIA-ansökningar – allt sparas lokalt i din webbläsare.</div>
     </div>
-    <button class="btn btn-primary" id="addBtn">＋ Ny ansökan</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="exportBtn" title="Spara alla ansökningar som en JSON-fil">⬇ Exportera</button>
+      <button class="btn btn-ghost" id="importBtn" title="Läs in ansökningar från en JSON-fil">⬆ Importera</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <button class="btn btn-primary" id="addBtn">＋ Ny ansökan</button>
+    </div>
   </header>
 
   <div class="stats" id="stats"></div>
@@ -281,6 +286,54 @@ $('form').addEventListener('submit', e => {
 });
 
 $('addBtn').onclick = () => openModal();
+
+function exportJSON(){
+  if (!apps.length){ toast('Inget att exportera ännu'); return; }
+  const data = { app:'lia-organizer', version:1, exported:new Date().toISOString(), applications:apps };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lia-ansokningar-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Exporterade ' + apps.length + ' ansökningar ✔');
+}
+
+function importJSON(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); } catch { toast('Ogiltig JSON-fil'); return; }
+    const incoming = Array.isArray(data) ? data : data.applications;
+    if (!Array.isArray(incoming)){ toast('Filen innehåller inga ansökningar'); return; }
+    const valid = incoming.filter(a => a && a.company).map(a => ({...a, id:a.id||uid()}));
+    if (!valid.length){ toast('Filen innehåller inga giltiga ansökningar'); return; }
+    const replace = apps.length ? confirm(
+      'OK = ersätt alla befintliga ansökningar med filens ' + valid.length + ' ansökningar.\n' +
+      'Avbryt = lägg till filens ansökningar bland dina befintliga (' + apps.length + ').'
+    ) : true;
+    if (replace) apps = valid;
+    else {
+      const existing = new Set(apps.map(a=>a.id));
+      for (const a of valid){
+        if (existing.has(a.id)) a.id = uid();
+        apps.push(a);
+      }
+    }
+    save(); render();
+    toast('Importerade ' + valid.length + ' ansökningar ✔');
+  };
+  reader.readAsText(file);
+}
+
+$('exportBtn').onclick = exportJSON;
+$('importBtn').onclick = () => $('importFile').click();
+$('importFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (f) importJSON(f);
+  e.target.value = '';
+});
 $('cancelBtn').onclick = () => $('modal').close();
 $('modal').addEventListener('close', () => $('form').reset());
 $('search').addEventListener('input', render);
