@@ -241,6 +241,9 @@ function render(){
       ${a.notes?`<div class="notes">📝 ${esc(a.notes)}</div>`:''}
       <div class="card-actions">
         <button class="btn btn-ghost" onclick="editApp('${a.id}')">✏️ Redigera</button>
+        <button class="btn btn-ghost" title="Sök företaget på Google" onclick="webSearch(${JSON.stringify(a.company)},'google')">🔎 Google</button>
+        <button class="btn btn-ghost" title="Sök kontaktpersoner på LinkedIn" onclick="webSearch(${JSON.stringify(a.company)},'linkedin')">👤 LinkedIn</button>
+        <button class="btn btn-ghost" title="Sök företagets adress och telefonnummer" onclick="webSearch(${JSON.stringify(a.company)},'maps')">📍 Maps</button>
         <button class="btn btn-ghost" onclick="dupApp('${a.id}')">⧉ Duplicera</button>
         <button class="btn btn-danger" onclick="delApp('${a.id}')">🗑 Ta bort</button>
       </div>
@@ -258,6 +261,17 @@ function openModal(id){
   $('modal').showModal();
 }
 function editApp(id){ openModal(id); }
+
+function webSearch(company, engine){
+  if (!company){ toast('Fyll i ett företagsnamn först'); return; }
+  const q = encodeURIComponent(company);
+  const urls = {
+    google: 'https://www.google.com/search?q=' + q,
+    linkedin: 'https://www.linkedin.com/search/results/companies/?keywords=' + q,
+    maps: 'https://www.google.com/maps/search/' + q
+  };
+  window.open(urls[engine], '_blank', 'noopener');
+}
 function dupApp(id){
   const a = apps.find(x=>x.id===id); if(!a) return;
   apps.unshift({...a, id:uid(), company:a.company+' (kopia)', updated:new Date().toISOString()});
