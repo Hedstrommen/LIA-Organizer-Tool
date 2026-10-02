@@ -241,9 +241,9 @@ function render(){
       ${a.notes?`<div class="notes">📝 ${esc(a.notes)}</div>`:''}
       <div class="card-actions">
         <button class="btn btn-ghost" onclick="editApp('${a.id}')">✏️ Redigera</button>
-        <button class="btn btn-ghost" title="Sök företaget på Google" onclick="webSearch(${JSON.stringify(a.company)},'google')">🔎 Google</button>
-        <button class="btn btn-ghost" title="Sök kontaktpersoner på LinkedIn" onclick="webSearch(${JSON.stringify(a.company)},'linkedin')">👤 LinkedIn</button>
-        <button class="btn btn-ghost" title="Sök företagets adress och telefonnummer" onclick="webSearch(${JSON.stringify(a.company)},'maps')">📍 Maps</button>
+        <button class="btn btn-ghost" title="Sök företaget på Google" onclick="webSearch('${a.id}','google')">🔎 Google</button>
+        <button class="btn btn-ghost" title="Sök kontaktpersoner på LinkedIn" onclick="webSearch('${a.id}','linkedin')">👤 LinkedIn</button>
+        <button class="btn btn-ghost" title="Sök företagets adress och telefonnummer" onclick="webSearch('${a.id}','maps')">📍 Maps</button>
         <button class="btn btn-ghost" onclick="dupApp('${a.id}')">⧉ Duplicera</button>
         <button class="btn btn-danger" onclick="delApp('${a.id}')">🗑 Ta bort</button>
       </div>
@@ -262,9 +262,10 @@ function openModal(id){
 }
 function editApp(id){ openModal(id); }
 
-function webSearch(company, engine){
-  if (!company){ toast('Fyll i ett företagsnamn först'); return; }
-  const q = encodeURIComponent(company);
+function webSearch(id, engine){
+  const a = apps.find(x=>x.id===id);
+  if (!a || !a.company){ toast('Fyll i ett företagsnamn först'); return; }
+  const q = encodeURIComponent(a.company);
   const urls = {
     google: 'https://www.google.com/search?q=' + q,
     linkedin: 'https://www.linkedin.com/search/results/companies/?keywords=' + q,
