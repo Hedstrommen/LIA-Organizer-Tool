@@ -50,6 +50,7 @@ select.sort { padding:11px 14px; border:2px solid var(--border); border-radius:1
 .b-yes { background:#dcfce7; color:#15803d; }
 .b-no { background:#fee2e2; color:#b91c1c; }
 .b-status { background:var(--m100); color:var(--m700); }
+.b-type { background:#d8e9e4; color:#1e5f56; }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px 18px; margin-top:10px; font-size:.92rem; }
 .grid .lbl { color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; display:block; }
 .grid .val { color:var(--text); }
@@ -139,6 +140,13 @@ textarea { resize:vertical; min-height:70px; }
         <div><label for="city">Ort</label><input id="city" placeholder="t.ex. Stockholm"></div>
         <div><label for="role">LIA-roll / tjänst</label><input id="role" placeholder="t.ex. .NET-utvecklare"></div>
         <div><label for="period">LIA-period</label><input id="period" placeholder="t.ex. vt 2026, 10 veckor"></div>
+        <div><label for="businessType">Verksamhetstyp</label>
+          <select id="businessType" class="sort" style="width:100%">
+            <option value="">– Välj –</option>
+            <option value="consult">Konsultbolag</option>
+            <option value="product">Produktbolag</option>
+          </select>
+        </div>
         <div class="full"><label>Kontakt på företaget</label></div>
         <div><label for="contactName">Namn</label><input id="contactName"></div>
         <div><label for="contactTitle">Titel</label><input id="contactTitle" placeholder="t.ex. HR-specialist"></div>
@@ -173,7 +181,7 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 
 function matches(a, q){
   q = q.toLowerCase();
-  return [a.company,a.city,a.role,a.period,a.notes,a.status,a.contactName,a.contactTitle,a.contactEmail,a.contactPhone]
+  return [a.company,a.city,a.role,a.period,a.businessType,a.notes,a.status,a.contactName,a.contactTitle,a.contactEmail,a.contactPhone]
     .some(v => String(v||'').toLowerCase().includes(q));
 }
 
@@ -229,7 +237,7 @@ function render(){
         <div class="company">${site ? site : esc(a.company)}</div>
         ${site && a.company ? `<div class="val" style="font-weight:600">${esc(a.company)}</div>` : ''}
       </div>
-      <div class="badges"><span class="badge b-status">${esc(a.status||'Skickad')}</span>${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
+      <div class="badges"><span class="badge b-status">${esc(a.status||'Skickad')}</span>${a.businessType?`<span class="badge b-type">${a.businessType==='consult'?'🤝 Konsultbolag':'📦 Produktbolag'}</span>`:''}${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
       <div class="grid">
         <div><span class="lbl">Ansökningsdatum</span><span class="val">📅 ${esc(a.applyDate)||'—'}</span></div>
         ${a.deadline?`<div><span class="lbl">Sista ansökningsdag</span><span class="val">⏰ ${esc(a.deadline)}</span></div>`:''}
@@ -255,7 +263,7 @@ function openModal(id){
   const a = id ? apps.find(x=>x.id===id) : null;
   $('modalTitle').textContent = a ? 'Redigera ansökan' : 'Ny ansökan';
   $('id').value = a ? a.id : '';
-  for (const f of ['company','applyDate','deadline','website','status','answer','answerDate','city','role','period','contactName','contactTitle','contactEmail','contactPhone','notes'])
+  for (const f of ['company','applyDate','deadline','website','status','answer','answerDate','city','role','period','businessType','contactName','contactTitle','contactEmail','contactPhone','notes'])
     $(f).value = a ? (a[f] ?? '') : '';
   if (!a) { $('applyDate').valueAsDate = new Date(); $('answer').value = 'pending'; $('status').value = 'Skickad'; }
   $('modal').showModal();
@@ -291,7 +299,7 @@ $('form').addEventListener('submit', e => {
   const data = {
     id: id || uid(), updated: new Date().toISOString()
   };
-  for (const f of ['company','applyDate','deadline','website','status','answer','answerDate','city','role','period','contactName','contactTitle','contactEmail','contactPhone','notes'])
+  for (const f of ['company','applyDate','deadline','website','status','answer','answerDate','city','role','period','businessType','contactName','contactTitle','contactEmail','contactPhone','notes'])
     data[f] = $(f).value.trim();
   if (data.answer === 'pending') data.answerDate = '';
   const i = apps.findIndex(x=>x.id===data.id);
