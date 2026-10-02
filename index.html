@@ -50,6 +50,7 @@ select.sort { padding:11px 14px; border:2px solid var(--border); border-radius:1
 .b-yes { background:#dcfce7; color:#15803d; }
 .b-no { background:#fee2e2; color:#b91c1c; }
 .b-status { background:var(--m100); color:var(--m700); }
+.b-status-red { background:#fee2e2; color:#b91c1c; }
 .b-type { background:#d8e9e4; color:#1e5f56; }
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px 18px; margin-top:10px; font-size:.92rem; }
 .grid .lbl { color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.4px; display:block; }
@@ -237,7 +238,7 @@ function render(){
         <div class="company">${site ? site : esc(a.company)}</div>
         ${site && a.company ? `<div class="val" style="font-weight:600">${esc(a.company)}</div>` : ''}
       </div>
-      <div class="badges"><span class="badge b-status">${esc(a.status||'Skickad')}</span>${a.businessType?`<span class="badge b-type">${a.businessType==='consult'?'🤝 Konsultbolag':'📦 Produktbolag'}</span>`:''}${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
+      <div class="badges"><span class="badge b-status ${a.status==='Inte skickad'?'b-status-red':''}">${esc(a.status||'Skickad')}</span>${a.businessType?`<span class="badge b-type">${a.businessType==='consult'?'🤝 Konsultbolag':'📦 Produktbolag'}</span>`:''}${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
       <div class="grid">
         <div><span class="lbl">Ansökningsdatum</span><span class="val">📅 ${esc(a.applyDate)||'—'}</span></div>
         ${a.deadline?`<div><span class="lbl">Sista ansökningsdag</span><span class="val">⏰ ${esc(a.deadline)}</span></div>`:''}
