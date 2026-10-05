@@ -2,7 +2,7 @@
 
 Ett enkelt verktyg för att hålla ordning på dina LIA-ansökningar. 
 
-OBS - Byggd med AI - idé och prompter av mig.
+    OBS - Byggd med AI - idé och prompter av mig.
 
 # Bild från appen:
 
