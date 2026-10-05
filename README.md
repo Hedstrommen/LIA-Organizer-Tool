@@ -2,11 +2,13 @@
 
 Ett enkelt verktyg för att hålla ordning på dina LIA-ansökningar (Lärande i arbete).
 
-## Kom igång via GitHub Pages
+# Bild från appen:
 
-1. Gå till repo-inställningarna: **Settings → Pages**
-2. Under **Source**, välj `main`-branchen och roten (`/`), spara
-3. Efter någon minut finns appen på `https://<ditt-användarnamn>.github.io/LIA-Organizer-Tool/`
+<img width="1108" height="684" alt="image" src="https://github.com/user-attachments/assets/a6a6d4fb-e1a2-4134-a809-b6b6cc118902" />
+
+## Testa appen själv här:
+
+https://hedstrommen.github.io/LIA-Organizer-Tool/
 
 ## Funktioner
 
