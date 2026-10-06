@@ -41,6 +41,14 @@ select.sort { padding:11px 14px; border:2px solid var(--border); border-radius:1
 .card { background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:18px; margin-bottom:14px; border:1px solid var(--m100); transition:.15s; }
 .card:hover { box-shadow:0 6px 20px rgba(93,64,36,.16); }
 .card-top { display:flex; flex-direction:column; gap:4px; }
+.card-head { display:flex; align-items:center; gap:12px; cursor:pointer; flex-wrap:wrap; }
+.card-head .company { flex:1 1 auto; min-width:120px; }
+.head-badges { display:flex; gap:6px; flex-wrap:wrap; }
+.head-city { color:var(--muted); font-size:.9rem; white-space:nowrap; }
+.toggle { margin-left:auto; background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--m600); transition:transform .15s; }
+.card.collapsed .toggle { transform:rotate(-90deg); }
+.card-details { }
+.card.collapsed .card-details { display:none; }
 .company { font-size:1.25rem; font-weight:700; color:var(--m800); }
 .company a { color:inherit; text-decoration:none; border-bottom:2px solid var(--m300); }
 .company a:hover { color:var(--m600); }
@@ -105,6 +113,8 @@ textarea { resize:vertical; min-height:70px; }
       <option value="company-desc">Företag Ö–A</option>
       <option value="updated-desc">Senast ändrad</option>
     </select>
+    <button class="btn btn-ghost" onclick="setAllCollapsed(false)" title="Visa alla detaljer">▾ Visa alla</button>
+    <button class="btn btn-ghost" onclick="setAllCollapsed(true)" title="Dölj alla detaljer">▴ Dölj alla</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -169,12 +179,17 @@ textarea { resize:vertical; min-height:70px; }
 const KEY = 'lia-applications-v1';
 const $ = id => document.getElementById(id);
 let apps = [];
+const COLLAPSE_KEY = 'lia-collapsed';
+let collapsed = new Set();
 let filter = 'all';
 
 const STATUS_ICON = {yes:'✅', no:'❌', pending:'⏳'};
 const STATUSES = ['Inte skickad','Skickad','Intervju','Klar'];
 
-function load(){ try{ apps = JSON.parse(localStorage.getItem(KEY)) || []; } catch{ apps = []; } }
+function load(){ try{ apps = JSON.parse(localStorage.getItem(KEY)) || []; } catch{ apps = []; } try{ collapsed = new Set(JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || []); } catch{ collapsed = new Set(); } }
+function saveCollapsed(){ localStorage.setItem(COLLAPSE_KEY, JSON.stringify([...collapsed])); }
+function toggleCard(id){ const el=$('card-'+id); if(!el) return; if(collapsed.has(id)) collapsed.delete(id); else collapsed.add(id); saveCollapsed(); el.classList.toggle('collapsed', collapsed.has(id)); }
+function setAllCollapsed(v){ apps.forEach(a => { if(v) collapsed.add(a.id); else collapsed.delete(a.id); }); saveCollapsed(); render(); }
 function save(){ localStorage.setItem(KEY, JSON.stringify(apps)); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -238,9 +253,15 @@ function render(){
     const ans = a.answer==='pending' ? '<span class="badge b-pending">⏳ Väntar på svar</span>'
       : a.answer==='yes' ? '<span class="badge b-yes">✅ Ja</span>' : '<span class="badge b-no">❌ Nej</span>';
     const site = a.website ? `<a href="${esc(a.website)}" target="_blank" rel="noopener">🌐 ${esc(a.website.replace(/^https?:\/\//,'').replace(/\/$/,''))}</a>` : '';
-    return `<div class="card">
-      <div class="card-top">
+    return `<div class="card ${collapsed.has(a.id)?'collapsed':''}" id="card-${a.id}">
+      <div class="card-head" onclick="toggleCard('${a.id}')" title="Klicka för att visa/dölja detaljer">
         <div class="company">${esc(a.company)}</div>
+        <div class="head-badges"><span class="badge b-status ${a.status==='Inte skickad'?'b-status-red':''}">${esc(a.status||'Skickad')}</span>${ans}</div>
+        <div class="head-city">📍 ${esc(a.city)||'—'}</div>
+        <button class="toggle" aria-label="Visa/dölj detaljer">▾</button>
+      </div>
+      <div class="card-details">
+      <div class="card-top">
         <div class="val">${site || '—'}</div>
       </div>
       <div class="badges"><span class="badge b-status ${a.status==='Inte skickad'?'b-status-red':''}">${esc(a.status||'Skickad')}</span>${a.businessType?`<span class="badge b-type">${a.businessType==='consult'?'🤝 Konsultbolag':'📦 Produktbolag'}</span>`:''}${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
@@ -260,6 +281,7 @@ function render(){
         <button class="btn btn-ghost" title="Sök företagets adress och telefonnummer" onclick="webSearch('${a.id}','maps')">📍 Maps</button>
         <button class="btn btn-ghost" onclick="dupApp('${a.id}')">⧉ Duplicera</button>
         <button class="btn btn-danger" onclick="delApp('${a.id}')">🗑 Ta bort</button>
+      </div>
       </div>
     </div>`;
   }).join('');
