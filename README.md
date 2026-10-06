@@ -10,7 +10,7 @@ Ett enkelt verktyg för att hålla ordning på dina LIA-ansökningar.
 
 ## Testa appen själv här:
 
-https://hedstrommen.github.io/LIA-Organizer-Tool/
+https://hedstrommen.github.io/lia-organizer-tool/
 
 ## Funktioner
 
