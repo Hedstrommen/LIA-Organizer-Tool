@@ -40,7 +40,7 @@ select.sort { padding:11px 14px; border:2px solid var(--border); border-radius:1
 .chip.active { background:#2f7a1e; border-color:#2f7a1e; color:#fff; }
 .card { background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:18px; margin-bottom:14px; border:1px solid var(--m100); transition:.15s; }
 .card:hover { box-shadow:0 6px 20px rgba(93,64,36,.16); }
-.card-top { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:flex-start; }
+.card-top { display:flex; flex-direction:column; gap:4px; }
 .company { font-size:1.25rem; font-weight:700; color:var(--m800); }
 .company a { color:inherit; text-decoration:none; border-bottom:2px solid var(--m300); }
 .company a:hover { color:var(--m600); }
@@ -227,25 +227,30 @@ function render(){
     $('list').innerHTML = `<div class="empty"><div class="big">🗂️</div><h3>${total ? 'Inga träffar' : 'Inga ansökningar än'}</h3><p>${total ? 'Prova att ändra sökning eller filter.' : 'Klicka på “＋ Ny ansökan” för att lägga till din första LIA-ansökan!'}</p></div>`;
     return;
   }
+  const contactShort = a => {
+    const parts = [];
+    if (a.contactName) parts.push(esc(a.contactName) + (a.contactTitle ? ` <small>(${esc(a.contactTitle)})</small>` : ''));
+    if (a.contactEmail) parts.push(`✉️ <a href="mailto:${esc(a.contactEmail)}">${esc(a.contactEmail)}</a>`);
+    if (a.contactPhone) parts.push('📞 ' + esc(a.contactPhone));
+    return parts.join('<br>') || '—';
+  };
   $('list').innerHTML = list.map(a=>{
     const ans = a.answer==='pending' ? '<span class="badge b-pending">⏳ Väntar på svar</span>'
       : a.answer==='yes' ? '<span class="badge b-yes">✅ Ja</span>' : '<span class="badge b-no">❌ Nej</span>';
     const site = a.website ? `<a href="${esc(a.website)}" target="_blank" rel="noopener">🌐 ${esc(a.website.replace(/^https?:\/\//,'').replace(/\/$/,''))}</a>` : '';
-    const contact = a.contactName || a.contactEmail ? `
-      <div><span class="lbl">Kontakt</span><span class="val">${esc(a.contactName)}${a.contactTitle?' <small>('+esc(a.contactTitle)+')</small>':''}${a.contactEmail?`<br>✉️ <a href="mailto:${esc(a.contactEmail)}">${esc(a.contactEmail)}</a>`:''}${a.contactPhone?'<br>📞 '+esc(a.contactPhone):''}</span></div>` : '';
     return `<div class="card">
       <div class="card-top">
         <div class="company">${esc(a.company)}</div>
-        ${site ? `<div class="val">${site}</div>` : ''}
+        <div class="val">${site || '—'}</div>
       </div>
       <div class="badges"><span class="badge b-status ${a.status==='Inte skickad'?'b-status-red':''}">${esc(a.status||'Skickad')}</span>${a.businessType?`<span class="badge b-type">${a.businessType==='consult'?'🤝 Konsultbolag':'📦 Produktbolag'}</span>`:''}${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
       <div class="grid">
         <div><span class="lbl">Ansökningsdatum</span><span class="val">📅 ${esc(a.applyDate)||'—'}</span></div>
-        ${a.deadline?`<div><span class="lbl">Sista ansökningsdag</span><span class="val">⏰ ${esc(a.deadline)}</span></div>`:''}
-        ${a.role?`<div><span class="lbl">Roll</span><span class="val">💼 ${esc(a.role)}</span></div>`:''}
-        ${a.period?`<div><span class="lbl">LIA-period</span><span class="val">🗓️ ${esc(a.period)}</span></div>`:''}
-        ${a.city?`<div><span class="lbl">Ort</span><span class="val">📍 ${esc(a.city)}</span></div>`:''}
-        ${contact}
+        <div><span class="lbl">Sista ansökningsdag</span><span class="val">⏰ ${esc(a.deadline)||'—'}</span></div>
+        <div><span class="lbl">Roll</span><span class="val">💼 ${esc(a.role)||'—'}</span></div>
+        <div><span class="lbl">LIA-period</span><span class="val">🗓️ ${esc(a.period)||'—'}</span></div>
+        <div><span class="lbl">Ort</span><span class="val">📍 ${esc(a.city)||'—'}</span></div>
+        <div><span class="lbl">Kontakt</span><span class="val">${contactShort(a)}</span></div>
       </div>
       ${a.notes?`<div class="notes">📝 ${esc(a.notes)}</div>`:''}
       <div class="card-actions">
