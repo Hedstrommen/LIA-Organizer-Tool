@@ -235,8 +235,8 @@ function render(){
       <div><span class="lbl">Kontakt</span><span class="val">${esc(a.contactName)}${a.contactTitle?' <small>('+esc(a.contactTitle)+')</small>':''}${a.contactEmail?`<br>✉️ <a href="mailto:${esc(a.contactEmail)}">${esc(a.contactEmail)}</a>`:''}${a.contactPhone?'<br>📞 '+esc(a.contactPhone):''}</span></div>` : '';
     return `<div class="card">
       <div class="card-top">
-        <div class="company">${site ? site : esc(a.company)}</div>
-        ${site && a.company ? `<div class="val" style="font-weight:600">${esc(a.company)}</div>` : ''}
+        <div class="company">${esc(a.company)}</div>
+        ${site ? `<div class="val">${site}</div>` : ''}
       </div>
       <div class="badges"><span class="badge b-status ${a.status==='Inte skickad'?'b-status-red':''}">${esc(a.status||'Skickad')}</span>${a.businessType?`<span class="badge b-type">${a.businessType==='consult'?'🤝 Konsultbolag':'📦 Produktbolag'}</span>`:''}${ans}${a.answerDate?`<span class="badge b-pending">Svar: ${esc(a.answerDate)}</span>`:''}</div>
       <div class="grid">
