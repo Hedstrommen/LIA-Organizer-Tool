@@ -3,14 +3,17 @@
 Ett enkelt verktyg för att hålla ordning på dina LIA-ansökningar. 
 
     OBS - Byggd med AI - idé och prompter av mig.
-
-# Bild från appen:
-
-<img width="1108" height="684" alt="image" src="https://github.com/user-attachments/assets/a6a6d4fb-e1a2-4134-a809-b6b6cc118902" />
-
+    
 ## Testa appen själv här:
 
-https://hedstrommen.github.io/lia-organizer-tool/
+    https://hedstrommen.github.io/lia-organizer-tool/
+
+# Bild:
+
+<img width="1081" height="658" alt="image" src="https://github.com/user-attachments/assets/c3e97b6c-9c5d-4ab5-8aea-c45f1c958246" />
+
+<img width="1098" height="379" alt="image" src="https://github.com/user-attachments/assets/a825569a-685f-4b79-93ba-5e5b4d578623" />
+
 
 ## Funktioner
 
@@ -25,7 +28,7 @@ https://hedstrommen.github.io/lia-organizer-tool/
 - ⬇/⬆ **Export & import**: spara alla ansökningar som en JSON-fil (backup) och läs in dem igen – välj att ersätta eller lägga till bland befintliga
 - ⧉ **Duplicera** och ✏️ **redigera** befintliga ansökningar
 
-## Sekretess
+## Sekretess och sparande av data
 
 All data sparas **endast lokalt i din webbläsare** via `localStorage`. Ingen data skickas till någon server, så flera personer kan använda appen via samma sida utan att se varandras ansökningar. Tänk på:
 
