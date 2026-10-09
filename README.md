@@ -8,7 +8,7 @@ Ett enkelt verktyg för att hålla ordning på dina LIA-ansökningar.
 
     https://hedstrommen.github.io/lia-organizer-tool/
 
-# Bild:
+# Bilder hur det kan se ut
 
 <img width="1081" height="658" alt="image" src="https://github.com/user-attachments/assets/c3e97b6c-9c5d-4ab5-8aea-c45f1c958246" />
 
